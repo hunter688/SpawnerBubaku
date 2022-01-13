@@ -1,9 +1,7 @@
 modded class MissionServer
 {
-
 	void MissionServer()
     {
-           		
 		BuBuConfig config;
 		BubakConfig.UpgradeConfig("SpawnerBubaku.json", config);
         GetDayZGame().SetBubakConfig(config);

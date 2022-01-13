@@ -4,7 +4,8 @@ class SpawnerBubaku
 {
 
 	protected static ref SpawnerBubaku Instance;
-	
+	protected ref map<int, ref TIntArray> spawned_instances;
+
 	static SpawnerBubaku GetInstance()
 	{
 		if (!Instance)
@@ -22,7 +23,9 @@ class SpawnerBubaku
 	void SpawnerBubaku()
     {
         
-		SPBLogger.Log( "SpawnerBubaku started!" );
+		SPBLogger.GetInstance().Log( "SpawnerBubaku started!" );
+
+		spawned_instances = new map<int, ref TIntArray>;
 
 		BuBuConfig config = GetDayZGame().GetBubakConfig();
 		BubakTrigger trigger;
@@ -30,9 +33,6 @@ class SpawnerBubaku
 		float radius;
 		for ( int i=0; i < config.BubakLocations.Count(); i++)
 		{
-			
-			//
-			
 			string posrot = config.BubakLocations.Get(i).triggerpos;
 			TStringArray loc = new TStringArray;
 			posrot.Split( "|", loc );
@@ -43,7 +43,7 @@ class SpawnerBubaku
 				pos = config.BubakLocations.Get(i).triggerpos;
 				rot = "0 0 0";
 			}
-			SPBLogger.Log("Created trigger " + config.BubakLocations.Get(i).name + " at " + pos + " ori: " + rot);
+			SPBLogger.GetInstance().Log("Created trigger " + config.BubakLocations.Get(i).name + " at " + pos + " ori: " + rot, SPBLogger.LOGLEVEL_CRITICAL);
 			trigger = BubakTrigger.Cast(GetGame().CreateObject("BubakTrigger", pos.ToVector() ));
 			trigger.SetOrientation(rot.ToVector());
 			
@@ -65,9 +65,28 @@ class SpawnerBubaku
 			trigger.SetLastTriggerTime(-1 * config.BubakLocations.Get(i).triggerdelay);
 			trigger.SetTriggerDelay(config.BubakLocations.Get(i).triggerdelay);
 			trigger.SetBubakNum(config.BubakLocations.Get(i).bubaknum);
+			trigger.SetOnlyFillUpToBubaknum(config.BubakLocations.Get(i).onlyfilluptobubaknum);
 		}
-		//GetGame().CreateObject("MyCustomTrigger", "1683 457 14219");
-		//GetGame().CreateObject("Bone", "1683 457 14219");		
+	}
+
+	void AddSpawnedInstance(int trigger_id, int bubak_id)
+	{
+		TIntArray spawned_trigger_instances = spawned_instances.Get(trigger_id);
+		if(!spawned_trigger_instances) spawned_trigger_instances = new TIntArray;
+		spawned_trigger_instances.Insert(bubak_id);
+		spawned_instances.Set(trigger_id, spawned_trigger_instances);
+	}
+
+	void RemoveSpawnedInstance(int trigger_id, int bubak_id)
+	{
+		SPBLogger.GetInstance().Log("SpawnerBubaku.RemoveSpawnedInstance(" + trigger_id + ", " + bubak_id + ")");
+		spawned_instances.Get(trigger_id).RemoveItem(bubak_id);
+	}
+
+	TIntArray GetSpawnedInstances(int trigger_id)
+	{
+		if(spawned_instances) return spawned_instances.Get(trigger_id);
+		return NULL;
 	}
 }
 

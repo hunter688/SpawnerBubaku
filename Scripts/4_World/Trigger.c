@@ -8,6 +8,7 @@ class BubakTrigger extends Trigger
 	protected int m_TriggerDelay;
 	protected int m_BubakNum;
 	protected int m_LastTriggerTime;
+	protected int m_OnlyFillUpToBubaknum;
 	
 	void SetTriggerName(string name)
 	{
@@ -73,7 +74,12 @@ class BubakTrigger extends Trigger
 	{
 		m_BubakNum = bubaknum;
 	}
-	
+
+	void SetOnlyFillUpToBubaknum(int onlyFillUpToBubaknum)
+	{
+		m_OnlyFillUpToBubaknum = onlyFillUpToBubaknum;
+	}
+
 	bool CanTriggerAction(int time)
 	{
 		if (time > m_LastTriggerTime+m_TriggerDelay)
@@ -88,33 +94,34 @@ class BubakTrigger extends Trigger
 	
 	void OnEnter(Object obj)
     {
-		//SPBLogger.Log( "SpawnerBubaku ENTER" );
+		SPBLogger.GetInstance().Log( "SpawnerBubaku ENTER" );
+
 		if (obj.IsMan())
 		{
 			// porovnat s ulozenym casem tiku, kdyz je vetsi nez cooldown ulozit novy a povolit akci
 			//GetGame().CreateObject("Seachest", obj.GetPosition() );
 			//GetGame().CreateObject("ZmbM_ClerkFat_White", obj.GetPosition(), false, true, true );
-			//SPBLogger.Log( "Triggered " + GetTriggerName() + " time " + GetGame().GetTime()/1000);
+			SPBLogger.GetInstance().Log( "Triggered " + GetTriggerName() + " time " + GetGame().GetTime()/1000);
 			if (CanTriggerAction(GetGame().GetTime()/1000))
 			{
 				if (PlayerBase.Cast(obj).GetIdentity())
 				{
 					if (PlayerBase.Cast(obj).GetIdentity().GetName())
 					{	
-						//SPBLogger.Log("Can trigger action " + GetGame().GetTime()/1000 + " last " + m_LastTriggerTime + " trigger delay " + m_TriggerDelay);
+						SPBLogger.GetInstance().Log("Can trigger action " + GetGame().GetTime()/1000 + " last " + m_LastTriggerTime + " trigger delay " + m_TriggerDelay);
 						SetLastTriggerTime(GetGame().GetTime()/1000);
 						SpawniBubaky();
 						if (GetTriggerNotification() != "")
 						{
 							NotificationSystem.SendNotificationToPlayerExtended(Man.Cast(obj), GetTriggerNotificationTime(), GetTriggerName(), GetTriggerNotification());
 						}
-						SPBLogger.Log( PlayerBase.Cast(obj).GetIdentity().GetName() + " triggered " + GetTriggerName());
+						SPBLogger.GetInstance().Log( PlayerBase.Cast(obj).GetIdentity().GetName() + " triggered " + GetTriggerName(), SPBLogger.LOGLEVEL_CRITICAL);
 					}
 				}
 			}
 			else
 			{
-				//SPBLogger.Log("Cannot trigger action it was called at " +  m_LastTriggerTime );
+				SPBLogger.GetInstance().Log("Cannot trigger action it was called at " +  m_LastTriggerTime );
 			}
 		}
 		
@@ -122,7 +129,7 @@ class BubakTrigger extends Trigger
 
     void OnLeave(Object obj)
     {    
-		//SPBLogger.Log( "SpawnerBubaku EXIT" );
+		SPBLogger.GetInstance().Log( "SpawnerBubaku EXIT" );
     }
 
 	/*
@@ -133,9 +140,35 @@ class BubakTrigger extends Trigger
         SetExtents(mins, maxs);
     }
 	*/
+
+	int SpawnerBubaku_GetActiveObjectsNum()
+	{
+		TIntArray spawned_instances = SpawnerBubaku.GetInstance().GetSpawnedInstances(GetID());
+		if(spawned_instances) return spawned_instances.Count();
+		return 0;
+	}
+
+	Object SpawnerBubaku_CreateObject(string type, vector pos, bool create_local = false, bool init_ai = false, bool create_physics = true)
+	{
+		auto newObject = GetGame().CreateObject(type, pos, create_local, init_ai, create_physics);
+		SPBLogger.GetInstance().Log("Created bubak: " + newObject.GetID());
+		SPBLogger.GetInstance().Log("pos: " + pos.ToString());
+
+		if(m_OnlyFillUpToBubaknum && newObject)
+		{
+			ZombieBase zombie = ZombieBase.Cast(newObject);
+			if(zombie)
+			{
+				zombie.SetTriggerId(GetID());
+				SpawnerBubaku.GetInstance().AddSpawnedInstance(GetID(), zombie.GetID());
+			}
+		}
+		
+		return newObject;
+	}
+
 	void SpawniBubaky()
 	{
-		//spawn bubaku
 		vector randvec, randompos;
 		string randvecstr;
 		float yko;
@@ -144,14 +177,26 @@ class BubakTrigger extends Trigger
 		bool rotated;
 		string posrot, pos,ori;
 		TStringArray loc;
-		if (m_BubakNum < m_SpawnLocations.Count())
+
+		SPBLogger.GetInstance().Log("m_OnlyFillUpToBubaknum: " + m_OnlyFillUpToBubaknum);
+		SPBLogger.GetInstance().Log("m_BubakNum: " + m_BubakNum);
+		SPBLogger.GetInstance().Log("m_SpawnLocations.Count(): " + m_SpawnLocations.Count());
+		SPBLogger.GetInstance().Log("SpawnerBubaku_GetActiveObjectsNum(): " + SpawnerBubaku_GetActiveObjectsNum());
+
+		int create_bubaks = m_BubakNum - SpawnerBubaku_GetActiveObjectsNum();
+		
+		SPBLogger.GetInstance().Log("Need to create: " + create_bubaks);
+
+		if (create_bubaks < m_SpawnLocations.Count())
 		{
 			//ramdom select spawn pos
-			TStringArray positions = m_SpawnLocations;
-			for ( i=0; i < m_BubakNum; i++)
+			TStringArray positions = new TStringArray();
+			positions.Copy(m_SpawnLocations);
+			for ( i=0; i < create_bubaks; i++)
 			{
 				rndnum = Math.RandomIntInclusive(0, positions.Count() - 1);
-				
+				SPBLogger.GetInstance().Log("random position index: " + rndnum);
+
 				rotated = false;
 				pos = positions.Get(rndnum);
 				ori = "0 0 0";
@@ -165,7 +210,7 @@ class BubakTrigger extends Trigger
 					rotated = true;
 				}
 				
-				auto object1 = GetGame().CreateObject(GetBubaci().GetRandomElement(), pos.ToVector() ,false,true, true);
+				auto object1 = SpawnerBubaku_CreateObject(GetBubaci().GetRandomElement(), pos.ToVector() ,false,true, true);
 				if (rotated)
 				{
 					object1.SetOrientation(ori.ToVector());
@@ -177,7 +222,7 @@ class BubakTrigger extends Trigger
 		} 
 		else 
 		{
-			for ( i=0; i < m_BubakNum; i++)
+			for ( i=0; i < create_bubaks; i++)
 			{
 				/*
 				randompos = m_SpawnLocations.GetRandomElement().ToVector();
@@ -187,6 +232,8 @@ class BubakTrigger extends Trigger
 				*/
 				rotated = false;
 				pos = m_SpawnLocations.Get(j);
+				SPBLogger.GetInstance().Log("position index: " + j);
+
 				ori = "0 0 0";
 				if (m_SpawnLocations.Get(j).Contains("|"))
 				{
@@ -198,7 +245,7 @@ class BubakTrigger extends Trigger
 					rotated = true;
 				}
 				
-				auto object2 = GetGame().CreateObject(GetBubaci().GetRandomElement(), pos.ToVector() ,false,true, true);
+				auto object2 = SpawnerBubaku_CreateObject(GetBubaci().GetRandomElement(), pos.ToVector() ,false,true, true);
 				if (rotated)
 				{
 					object2.SetOrientation(ori.ToVector());
