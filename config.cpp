@@ -46,6 +46,6 @@ class CfgMods
                 value="";
                 files[]={"SpawnerBubaku/Scripts/5_Mission"};
             };
-		}
+		};
     };
 };

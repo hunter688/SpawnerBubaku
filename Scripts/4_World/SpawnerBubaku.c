@@ -4,7 +4,8 @@ class SpawnerBubaku
 {
 
 	protected static ref SpawnerBubaku Instance;
-	
+	protected ref map<int, ref TIntArray> spawned_instances;
+
 	static SpawnerBubaku GetInstance()
 	{
 		if (!Instance)
@@ -23,6 +24,8 @@ class SpawnerBubaku
     {
         
 		SPBLogger.Log( "SpawnerBubaku started!" );
+
+		spawned_instances = new map<int, ref TIntArray>;
 
 		BuBuConfig config = GetDayZGame().GetBubakConfig();
 		BubakTrigger trigger;
@@ -65,9 +68,30 @@ class SpawnerBubaku
 			trigger.SetLastTriggerTime(-1 * config.BubakLocations.Get(i).triggerdelay);
 			trigger.SetTriggerDelay(config.BubakLocations.Get(i).triggerdelay);
 			trigger.SetBubakNum(config.BubakLocations.Get(i).bubaknum);
+			trigger.SetOnlyFillUpToBubaknum(config.BubakLocations.Get(i).onlyfilluptobubaknum);
 		}
 		//GetGame().CreateObject("MyCustomTrigger", "1683 457 14219");
 		//GetGame().CreateObject("Bone", "1683 457 14219");		
+	}
+
+	void AddSpawnedInstance(int trigger_id, int bubak_id)
+	{
+		TIntArray spawned_trigger_instances = spawned_instances.Get(trigger_id);
+		if(!spawned_trigger_instances) spawned_trigger_instances = new TIntArray;
+		spawned_trigger_instances.Insert(bubak_id);
+		spawned_instances.Set(trigger_id, spawned_trigger_instances);
+	}
+
+	void RemoveSpawnedInstance(int trigger_id, int bubak_id)
+	{
+		SPBLogger.Log("SpawnerBubaku.RemoveSpawnedInstance(" + trigger_id + ", " + bubak_id + ")");
+		spawned_instances.Get(trigger_id).RemoveItem(bubak_id);
+	}
+
+	TIntArray GetSpawnedInstances(int trigger_id)
+	{
+		if(spawned_instances) return spawned_instances.Get(trigger_id);
+		return NULL;
 	}
 }
 

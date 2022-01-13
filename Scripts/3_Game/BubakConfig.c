@@ -10,10 +10,10 @@ class BubakPlace
 	int triggerdelay;
     ref TStringArray spawnerpos;
 	int bubaknum;
+	int onlyfilluptobubaknum;
 	ref TStringArray bubaci;
 
-
-    void BubakPlace(string nam, string trxz, string trmin, string trmax, float trrad, string notf, int notftim, int trd, TStringArray spawnpos, int bubn, TStringArray bub) 
+    void BubakPlace(string nam, string trxz, string trmin, string trmax, float trrad, string notf, int notftim, int trd, TStringArray spawnpos, int bubn, int onlyfillup, TStringArray bub) 
 	{
         name = nam;
 		triggerpos = trxz;
@@ -25,7 +25,9 @@ class BubakPlace
 		triggerdelay = trd;
 		spawnerpos = spawnpos;
 		bubaknum = bubn;
+		onlyfilluptobubaknum = onlyfillup;
 		bubaci = bub;
+
 		//typ jmeno pozice triggeru
 		// delay kdy znova spustit 
 		// seznam spawn pointu seznam bubaku a u kazdeho pointu pocet bubaku 
@@ -108,6 +110,11 @@ class BubakConfig
 			{
 				configData.BubakLocations.Get(i).triggerradius = 0;
 			}
+
+			if (!configData.BubakLocations.Get(i).onlyfilluptobubaknum)
+			{
+				configData.BubakLocations.Get(i).onlyfilluptobubaknum = 0;
+			}
 		}
 			
         JsonFileLoader<BuBuConfig>.JsonSaveFile(configPath, configData);
@@ -116,7 +123,7 @@ class BubakConfig
     protected static void CreateDefaultConfig(out BuBuConfig configData)
     {
         configData = new BuBuConfig();
-		configData.BubakLocations.Insert( new BubakPlace("trigger1", "1683 457 14219", "-1 -0.2 -1", "1 1 1" ,0 ,"" , 2, 1800, {"1683 457 14219", "1684 457 14218"}, 4, {"ZmbM_ClerkFat_White", "ZmbM_SoldierNormal"} ));
-		configData.BubakLocations.Insert( new BubakPlace("trigger2", "1530 0 8", "-1 -0.2 -1", "1 1 1" ,0, "", 2, 3600, {"1358 500 25", "0 0 0"}, 20, {"ZmbM_ClerkFat_White", "ZmbM_SoldierNormal"} ));
+		configData.BubakLocations.Insert( new BubakPlace("trigger1", "1683 457 14219", "-1 -0.2 -1", "1 1 1" ,0 ,"" , 2, 1800, {"1683 457 14219", "1684 457 14218"}, 4, 1, {"ZmbM_ClerkFat_White", "ZmbM_SoldierNormal"} ));
+		configData.BubakLocations.Insert( new BubakPlace("trigger2", "1530 0 8", "-1 -0.2 -1", "1 1 1" ,0, "", 2, 3600, {"1358 500 25", "0 0 0"}, 20, 0, {"ZmbM_ClerkFat_White", "ZmbM_SoldierNormal"} ));
 	}
 }
