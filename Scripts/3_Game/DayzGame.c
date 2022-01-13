@@ -1,7 +1,6 @@
 modded class DayZGame
 {	
 	protected ref BuBuConfig m_BubakConfig;
-
 	
     void SetBubakConfig(BuBuConfig config)
     {
@@ -10,6 +9,6 @@ modded class DayZGame
 
     BuBuConfig GetBubakConfig()
     {
-		return m_BubakConfig;
+  		return m_BubakConfig;
     }
 };

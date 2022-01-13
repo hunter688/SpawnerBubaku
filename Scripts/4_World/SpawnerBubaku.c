@@ -23,7 +23,7 @@ class SpawnerBubaku
 	void SpawnerBubaku()
     {
         
-		SPBLogger.Log( "SpawnerBubaku started!" );
+		SPBLogger.GetInstance().Log( "SpawnerBubaku started!" );
 
 		spawned_instances = new map<int, ref TIntArray>;
 
@@ -33,9 +33,6 @@ class SpawnerBubaku
 		float radius;
 		for ( int i=0; i < config.BubakLocations.Count(); i++)
 		{
-			
-			//
-			
 			string posrot = config.BubakLocations.Get(i).triggerpos;
 			TStringArray loc = new TStringArray;
 			posrot.Split( "|", loc );
@@ -46,7 +43,7 @@ class SpawnerBubaku
 				pos = config.BubakLocations.Get(i).triggerpos;
 				rot = "0 0 0";
 			}
-			SPBLogger.Log("Created trigger " + config.BubakLocations.Get(i).name + " at " + pos + " ori: " + rot);
+			SPBLogger.GetInstance().Log("Created trigger " + config.BubakLocations.Get(i).name + " at " + pos + " ori: " + rot, SPBLogger.LOGLEVEL_CRITICAL);
 			trigger = BubakTrigger.Cast(GetGame().CreateObject("BubakTrigger", pos.ToVector() ));
 			trigger.SetOrientation(rot.ToVector());
 			
@@ -70,8 +67,6 @@ class SpawnerBubaku
 			trigger.SetBubakNum(config.BubakLocations.Get(i).bubaknum);
 			trigger.SetOnlyFillUpToBubaknum(config.BubakLocations.Get(i).onlyfilluptobubaknum);
 		}
-		//GetGame().CreateObject("MyCustomTrigger", "1683 457 14219");
-		//GetGame().CreateObject("Bone", "1683 457 14219");		
 	}
 
 	void AddSpawnedInstance(int trigger_id, int bubak_id)
@@ -84,7 +79,7 @@ class SpawnerBubaku
 
 	void RemoveSpawnedInstance(int trigger_id, int bubak_id)
 	{
-		SPBLogger.Log("SpawnerBubaku.RemoveSpawnedInstance(" + trigger_id + ", " + bubak_id + ")");
+		SPBLogger.GetInstance().Log("SpawnerBubaku.RemoveSpawnedInstance(" + trigger_id + ", " + bubak_id + ")");
 		spawned_instances.Get(trigger_id).RemoveItem(bubak_id);
 	}
 

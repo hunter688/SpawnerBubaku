@@ -27,26 +27,19 @@ class BubakPlace
 		bubaknum = bubn;
 		onlyfilluptobubaknum = onlyfillup;
 		bubaci = bub;
-
-		//typ jmeno pozice triggeru
-		// delay kdy znova spustit 
-		// seznam spawn pointu seznam bubaku a u kazdeho pointu pocet bubaku 
-		// jestli zahrat i zvuk 
-		
     }
 }
 
-
 class BuBuConfig
 {
+	int loglevel;
 	ref array< ref BubakPlace > BubakLocations;
 	
 	void BuBuConfig()
 	{
+		loglevel = 0;
 		BubakLocations = new ref array< ref BubakPlace >;
-
 	}
-
 }
 
 class BubakConfig
@@ -60,15 +53,14 @@ class BubakConfig
 
         if (!FileExist(configPath))
         {
-            SPBLogger.Log("'" + configName + "' does not exist, creating default config");
+            SPBLogger.GetInstance().Log("'" + configName + "' does not exist, creating default config", SPBLogger.LOGLEVEL_CRITICAL);
             CreateDefaultConfig(configData);
             SaveConfig(configName, configData);
             return;
         }
 
         JsonFileLoader<BuBuConfig>.JsonLoadFile(configPath, configData);
-        SPBLogger.Log("'" + configName + "' found, loading existing config");
-
+        SPBLogger.GetInstance().Log("'" + configName + "' found, loading existing config", SPBLogger.LOGLEVEL_CRITICAL);
     }
 
     protected static void SaveConfig(string configName, BuBuConfig configData)
@@ -77,7 +69,7 @@ class BubakConfig
 
         if (!FileExist(m_ConfigRoot))
         {
-            SPBLogger.Log("'" + m_ConfigRoot + "' does not exist, creating directory");
+            SPBLogger.GetInstance().Log("'" + m_ConfigRoot + "' does not exist, creating directory", SPBLogger.LOGLEVEL_CRITICAL);
             MakeDirectory(m_ConfigRoot);
         }
 
@@ -90,7 +82,7 @@ class BubakConfig
 
         if (!FileExist(configPath))
         {
-            SPBLogger.Log("'"  + configName + "' does not exist, creating default config");
+            SPBLogger.GetInstance().Log("'"  + configName + "' does not exist, creating default config", SPBLogger.LOGLEVEL_CRITICAL);
             CreateDefaultConfig(configData);
             SaveConfig(configName, configData);
             return;
@@ -98,6 +90,9 @@ class BubakConfig
 		JsonFileLoader<BuBuConfig>.JsonLoadFile(configPath, configData);
 		
 		//upgrades...
+
+		if(!configData.loglevel) configData.loglevel = 0;
+
 		for ( int i=0; i < configData.BubakLocations.Count(); i++)
 		{
 			if (!configData.BubakLocations.Get(i).notification)

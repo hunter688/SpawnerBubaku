@@ -94,33 +94,34 @@ class BubakTrigger extends Trigger
 	
 	void OnEnter(Object obj)
     {
-		//SPBLogger.Log( "SpawnerBubaku ENTER" );
+		SPBLogger.GetInstance().Log( "SpawnerBubaku ENTER" );
+
 		if (obj.IsMan())
 		{
 			// porovnat s ulozenym casem tiku, kdyz je vetsi nez cooldown ulozit novy a povolit akci
 			//GetGame().CreateObject("Seachest", obj.GetPosition() );
 			//GetGame().CreateObject("ZmbM_ClerkFat_White", obj.GetPosition(), false, true, true );
-			//SPBLogger.Log( "Triggered " + GetTriggerName() + " time " + GetGame().GetTime()/1000);
+			SPBLogger.GetInstance().Log( "Triggered " + GetTriggerName() + " time " + GetGame().GetTime()/1000);
 			if (CanTriggerAction(GetGame().GetTime()/1000))
 			{
 				if (PlayerBase.Cast(obj).GetIdentity())
 				{
 					if (PlayerBase.Cast(obj).GetIdentity().GetName())
 					{	
-						//SPBLogger.Log("Can trigger action " + GetGame().GetTime()/1000 + " last " + m_LastTriggerTime + " trigger delay " + m_TriggerDelay);
+						SPBLogger.GetInstance().Log("Can trigger action " + GetGame().GetTime()/1000 + " last " + m_LastTriggerTime + " trigger delay " + m_TriggerDelay);
 						SetLastTriggerTime(GetGame().GetTime()/1000);
 						SpawniBubaky();
 						if (GetTriggerNotification() != "")
 						{
 							NotificationSystem.SendNotificationToPlayerExtended(Man.Cast(obj), GetTriggerNotificationTime(), GetTriggerName(), GetTriggerNotification());
 						}
-						SPBLogger.Log( PlayerBase.Cast(obj).GetIdentity().GetName() + " triggered " + GetTriggerName());
+						SPBLogger.GetInstance().Log( PlayerBase.Cast(obj).GetIdentity().GetName() + " triggered " + GetTriggerName(), SPBLogger.LOGLEVEL_CRITICAL);
 					}
 				}
 			}
 			else
 			{
-				//SPBLogger.Log("Cannot trigger action it was called at " +  m_LastTriggerTime );
+				SPBLogger.GetInstance().Log("Cannot trigger action it was called at " +  m_LastTriggerTime );
 			}
 		}
 		
@@ -128,7 +129,7 @@ class BubakTrigger extends Trigger
 
     void OnLeave(Object obj)
     {    
-		//SPBLogger.Log( "SpawnerBubaku EXIT" );
+		SPBLogger.GetInstance().Log( "SpawnerBubaku EXIT" );
     }
 
 	/*
@@ -150,14 +151,17 @@ class BubakTrigger extends Trigger
 	Object SpawnerBubaku_CreateObject(string type, vector pos, bool create_local = false, bool init_ai = false, bool create_physics = true)
 	{
 		auto newObject = GetGame().CreateObject(type, pos, create_local, init_ai, create_physics);
-		SPBLogger.Log("Created bubak: " + newObject.GetID());
-		SPBLogger.Log("pos: " + pos.ToString());
+		SPBLogger.GetInstance().Log("Created bubak: " + newObject.GetID());
+		SPBLogger.GetInstance().Log("pos: " + pos.ToString());
 
 		if(m_OnlyFillUpToBubaknum && newObject)
 		{
-			SpawnerBubaku.GetInstance().AddSpawnedInstance(GetID(), newObject.GetID());
 			ZombieBase zombie = ZombieBase.Cast(newObject);
-			if(zombie) zombie.SetTriggerId(GetID());
+			if(zombie)
+			{
+				zombie.SetTriggerId(GetID());
+				SpawnerBubaku.GetInstance().AddSpawnedInstance(GetID(), zombie.GetID());
+			}
 		}
 		
 		return newObject;
@@ -165,7 +169,6 @@ class BubakTrigger extends Trigger
 
 	void SpawniBubaky()
 	{
-		//spawn bubaku
 		vector randvec, randompos;
 		string randvecstr;
 		float yko;
@@ -175,14 +178,14 @@ class BubakTrigger extends Trigger
 		string posrot, pos,ori;
 		TStringArray loc;
 
-		SPBLogger.Log("m_OnlyFillUpToBubaknum: " + m_OnlyFillUpToBubaknum);
-		SPBLogger.Log("m_BubakNum: " + m_BubakNum);
-		SPBLogger.Log("m_SpawnLocations.Count(): " + m_SpawnLocations.Count());
-		SPBLogger.Log("SpawnerBubaku_GetActiveObjectsNum(): " + SpawnerBubaku_GetActiveObjectsNum());
+		SPBLogger.GetInstance().Log("m_OnlyFillUpToBubaknum: " + m_OnlyFillUpToBubaknum);
+		SPBLogger.GetInstance().Log("m_BubakNum: " + m_BubakNum);
+		SPBLogger.GetInstance().Log("m_SpawnLocations.Count(): " + m_SpawnLocations.Count());
+		SPBLogger.GetInstance().Log("SpawnerBubaku_GetActiveObjectsNum(): " + SpawnerBubaku_GetActiveObjectsNum());
 
 		int create_bubaks = m_BubakNum - SpawnerBubaku_GetActiveObjectsNum();
 		
-		SPBLogger.Log("Need to create: " + create_bubaks);
+		SPBLogger.GetInstance().Log("Need to create: " + create_bubaks);
 
 		if (create_bubaks < m_SpawnLocations.Count())
 		{
@@ -192,7 +195,7 @@ class BubakTrigger extends Trigger
 			for ( i=0; i < create_bubaks; i++)
 			{
 				rndnum = Math.RandomIntInclusive(0, positions.Count() - 1);
-				SPBLogger.Log("random position index: " + rndnum);
+				SPBLogger.GetInstance().Log("random position index: " + rndnum);
 
 				rotated = false;
 				pos = positions.Get(rndnum);
@@ -229,7 +232,7 @@ class BubakTrigger extends Trigger
 				*/
 				rotated = false;
 				pos = m_SpawnLocations.Get(j);
-				SPBLogger.Log("position index: " + j);
+				SPBLogger.GetInstance().Log("position index: " + j);
 
 				ori = "0 0 0";
 				if (m_SpawnLocations.Get(j).Contains("|"))
