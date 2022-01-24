@@ -96,7 +96,7 @@ class BubakTrigger extends Trigger
     {
 		SPBLogger.GetInstance().Log( "SpawnerBubaku ENTER" );
 
-		if (obj.IsMan())
+		if (obj.IsMan() && GetGame().IsServer())
 		{
 			// porovnat s ulozenym casem tiku, kdyz je vetsi nez cooldown ulozit novy a povolit akci
 			//GetGame().CreateObject("Seachest", obj.GetPosition() );
