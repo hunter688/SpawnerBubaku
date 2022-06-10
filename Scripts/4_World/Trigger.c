@@ -151,8 +151,11 @@ class BubakTrigger extends Trigger
 	Object SpawnerBubaku_CreateObject(string type, vector pos, bool create_local = false, bool init_ai = false, bool create_physics = true)
 	{
 		auto newObject = GetGame().CreateObject(type, pos, create_local, init_ai, create_physics);
-		SPBLogger.GetInstance().Log("Created bubak: " + newObject.GetID());
-		SPBLogger.GetInstance().Log("pos: " + pos.ToString());
+		if (newObject)
+		{
+			SPBLogger.GetInstance().Log("Created bubak: " + newObject.GetID());
+			SPBLogger.GetInstance().Log("pos: " + pos.ToString());
+		}
 
 		if(m_OnlyFillUpToBubaknum && newObject)
 		{

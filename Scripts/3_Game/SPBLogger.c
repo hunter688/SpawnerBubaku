@@ -11,7 +11,7 @@ class SPBLogger {
 		s_Instance = this;
 		m_loglevel = LOGLEVEL_CRITICAL;
 
- 		BuBuConfig config = GetDayZGame().GetBubakConfig()
+ 		BuBuConfig config = GetDayZGame().GetBubakConfig();
 		if(config && config.loglevel) m_loglevel = config.loglevel;
 	}
 
