@@ -5,6 +5,7 @@ class BubakTrigger extends Trigger
 	protected int m_TriggerNotificationTime;
 	protected ref TStringArray m_SpawnLocations;
 	protected ref TStringArray m_Bubaci;
+	protected float m_SpawnRadius;
 	protected int m_TriggerDelay;
 	protected int m_BubakNum;
 	protected int m_LastTriggerTime;
@@ -48,6 +49,15 @@ class BubakTrigger extends Trigger
 	TStringArray GetSpawnLocations()
 	{
 		return m_SpawnLocations;
+	}
+	void SetSpawnRadius(float radius)
+	{
+		m_SpawnRadius = radius;
+	}
+	
+	float GetSpawnRadius()
+	{
+		return m_SpawnRadius;
 	}
 	
 	void SetBubaci(TStringArray bubaci)
@@ -172,7 +182,7 @@ class BubakTrigger extends Trigger
 
 	void SpawniBubaky()
 	{
-		vector randvec, randompos;
+		vector randvec, randompos, spawnpos;
 		string randvecstr;
 		float yko;
 		int rndnum,i;
@@ -212,8 +222,14 @@ class BubakTrigger extends Trigger
 					ori = loc.Get(1);
 					rotated = true;
 				}
+				spawnpos = pos.ToVector();
+				if (m_SpawnRadius >0)
+				{
+					spawnpos = SetRandomPos(spawnpos, m_SpawnRadius);
+				}
 				
-				auto object1 = SpawnerBubaku_CreateObject(GetBubaci().GetRandomElement(), pos.ToVector() ,false,true, true);
+				
+				auto object1 = SpawnerBubaku_CreateObject(GetBubaci().GetRandomElement(), spawnpos ,false,true, true);
 				if (rotated)
 				{
 					object1.SetOrientation(ori.ToVector());
@@ -247,8 +263,13 @@ class BubakTrigger extends Trigger
 					ori = loc.Get(1);
 					rotated = true;
 				}
+				spawnpos = pos.ToVector();
+				if (m_SpawnRadius >0)
+				{
+					spawnpos = SetRandomPos(spawnpos, m_SpawnRadius);
+				}
 				
-				auto object2 = SpawnerBubaku_CreateObject(GetBubaci().GetRandomElement(), pos.ToVector() ,false,true, true);
+				auto object2 = SpawnerBubaku_CreateObject(GetBubaci().GetRandomElement(), spawnpos ,false,true, true);
 				if (rotated)
 				{
 					object2.SetOrientation(ori.ToVector());
@@ -260,5 +281,31 @@ class BubakTrigger extends Trigger
 				}
 			}
 		}	
+	}
+	vector SetRandomPos(vector position, float radius)
+	{
+		vector randompos;
+		float t, u, v, w, x, y;
+		
+		u =  Math.RandomFloatInclusive(0.0, 1.0);
+		v =  Math.RandomFloatInclusive(0.0, 1.0);
+	
+		w = radius * Math.Sqrt(u);
+		t = 2 * Math.PI * v;
+		x = w * Math.Cos(t); 
+		y = w * Math.Sin(t);
+		
+	
+		randompos[0] = position[0]+x;
+		randompos[1] = position[1];
+		randompos[2] = position[2]+y;
+		//check surface
+		if (GetGame().SurfaceY(randompos[0], randompos[2]) > position[1])
+		{
+			randompos[1] = GetGame().SurfaceY(randompos[0], randompos[2]) + 0.3;
+		}
+		
+		return randompos;
+		
 	}
 };

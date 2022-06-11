@@ -30,7 +30,7 @@ class SpawnerBubaku
 		BuBuConfig config = GetDayZGame().GetBubakConfig();
 		BubakTrigger trigger;
 		vector mins, maxs;
-		float radius;
+		float radius, cylradius, cylheight, spawnradius;
 		for ( int i=0; i < config.BubakLocations.Count(); i++)
 		{
 			string posrot = config.BubakLocations.Get(i).triggerpos;
@@ -50,17 +50,24 @@ class SpawnerBubaku
 			mins = config.BubakLocations.Get(i).triggermins.ToVector();
 			maxs = config.BubakLocations.Get(i).triggermaxs.ToVector();
 			radius = config.BubakLocations.Get(i).triggerradius;
-			if (radius == 0)
+			cylradius = config.BubakLocations.Get(i).triggercylradius;
+			cylheight = config.BubakLocations.Get(i).triggercylheight;
+			if (radius == 0 && cylradius == 0)
 			{
 				trigger.SetExtents(mins, maxs);
-			} else {
-				trigger.SetCollisionCylinder(radius, 1.8);
+			} else if (radius > 0 && cylradius == 0)
+			{
+				trigger.SetCollisionSphere(radius);
+			} else if (radius ==0 && cylradius > 0) 
+			{
+				trigger.SetCollisionCylinder(cylradius, cylheight);
 			} 
 			
 			trigger.SetTriggerName(config.BubakLocations.Get(i).name);
 			trigger.SetTriggerNotification(config.BubakLocations.Get(i).notification);
 			trigger.SetTriggerNotificationTime(config.BubakLocations.Get(i).notificationtime);
 			trigger.SetSpawnLocations(config.BubakLocations.Get(i).spawnerpos);
+			trigger.SetSpawnRadius(config.BubakLocations.Get(i).spawnradius);
 			trigger.SetBubaci(config.BubakLocations.Get(i).bubaci);
 			trigger.SetLastTriggerTime(-1 * config.BubakLocations.Get(i).triggerdelay);
 			trigger.SetTriggerDelay(config.BubakLocations.Get(i).triggerdelay);
