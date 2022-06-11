@@ -237,8 +237,8 @@ class BubakTrigger extends Trigger
 					bubak = bubchance.Get(0);
 					spawnchance = bubchance.Get(1).ToFloat();
 				}
-				rndflt = Math.RandomFloatInclusive(0, 1.0)
-				if (spawnchance <= rndflt)
+				rndflt = Math.RandomFloatInclusive(0, 1.0);
+				if (spawnchance >= rndflt)
 				{
 					auto object1 = SpawnerBubaku_CreateObject(bubak, spawnpos ,false,true, true);
 					if (rotated)
@@ -290,8 +290,8 @@ class BubakTrigger extends Trigger
 					bubak = bubchance.Get(0);
 					spawnchance = bubchance.Get(1).ToFloat();
 				}
-				rndflt = Math.RandomFloatInclusive(0, 1.0)
-				if (spawnchance <= rndflt)
+				rndflt = Math.RandomFloatInclusive(0, 1.0);
+				if (spawnchance >= rndflt)
 				{
 					auto object2 = SpawnerBubaku_CreateObject(bubak, spawnpos ,false,true, true);
 					if (rotated)
