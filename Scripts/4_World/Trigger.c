@@ -184,12 +184,12 @@ class BubakTrigger extends Trigger
 	{
 		vector randvec, randompos, spawnpos;
 		string randvecstr;
-		float yko;
+		float yko, spawnchance, rndflt;
 		int rndnum,i;
 		int j = 0;
 		bool rotated;
-		string posrot, pos,ori;
-		TStringArray loc;
+		string posrot, pos,ori, bubak;
+		TStringArray loc, bubchance;
 
 		SPBLogger.GetInstance().Log("m_OnlyFillUpToBubaknum: " + m_OnlyFillUpToBubaknum);
 		SPBLogger.GetInstance().Log("m_BubakNum: " + m_BubakNum);
@@ -228,13 +228,25 @@ class BubakTrigger extends Trigger
 					spawnpos = SetRandomPos(spawnpos, m_SpawnRadius);
 				}
 				
-				
-				auto object1 = SpawnerBubaku_CreateObject(GetBubaci().GetRandomElement(), spawnpos ,false,true, true);
-				if (rotated)
+				bubak = GetBubaci().GetRandomElement();
+				spawnchance = 1.0;
+				if (bubak.Contains("|"))
 				{
-					object1.SetOrientation(ori.ToVector());
+					bubchance = new TStringArray;
+					bubak.Split("|", bubchance);
+					bubak = bubchance.Get(0);
+					spawnchance = bubchance.Get(1).ToFloat();
 				}
-				positions.RemoveOrdered(rndnum);
+				rndflt = Math.RandomFloatInclusive(0, 1.0)
+				if (spawnchance <= rndflt)
+				{
+					auto object1 = SpawnerBubaku_CreateObject(bubak, spawnpos ,false,true, true);
+					if (rotated)
+					{
+						object1.SetOrientation(ori.ToVector());
+					}
+					positions.RemoveOrdered(rndnum);
+				}
 				
 			}
 			
@@ -269,16 +281,30 @@ class BubakTrigger extends Trigger
 					spawnpos = SetRandomPos(spawnpos, m_SpawnRadius);
 				}
 				
-				auto object2 = SpawnerBubaku_CreateObject(GetBubaci().GetRandomElement(), spawnpos ,false,true, true);
-				if (rotated)
+				bubak = GetBubaci().GetRandomElement();
+				spawnchance = 1.0;
+				if (bubak.Contains("|"))
 				{
-					object2.SetOrientation(ori.ToVector());
+					bubchance = new TStringArray;
+					bubak.Split("|", bubchance);
+					bubak = bubchance.Get(0);
+					spawnchance = bubchance.Get(1).ToFloat();
 				}
-				j++;
-				if (j == m_SpawnLocations.Count())
+				rndflt = Math.RandomFloatInclusive(0, 1.0)
+				if (spawnchance <= rndflt)
 				{
-					j = 0;
+					auto object2 = SpawnerBubaku_CreateObject(bubak, spawnpos ,false,true, true);
+					if (rotated)
+					{
+						object2.SetOrientation(ori.ToVector());
+					}
+					j++;
+					if (j == m_SpawnLocations.Count())
+					{
+						j = 0;
+					}
 				}
+
 			}
 		}	
 	}
