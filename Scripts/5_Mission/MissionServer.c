@@ -21,7 +21,10 @@ modded class MissionServer
 		{
 			SPBLogger.GetInstance().Log("Selected Filename " + fileName, SPBLogger.LOGLEVEL_CRITICAL);
 		}
-		
+		else
+		{
+			BubakConfig.UpgradeConfig("SpawnerBubaku.json", config);
+		}
 		BubakConfig.UpgradeConfig(fileName, config);
         GetDayZGame().SetBubakConfig(config);
 
