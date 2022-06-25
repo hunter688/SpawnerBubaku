@@ -23,7 +23,7 @@ modded class MissionServer
 		}
 		else
 		{
-			BubakConfig.UpgradeConfig("SpawnerBubaku.json", config);
+			fileName = "SpawnerBubaku.json";
 		}
 		BubakConfig.UpgradeConfig(fileName, config);
         GetDayZGame().SetBubakConfig(config);
