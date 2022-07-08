@@ -1,6 +1,7 @@
 class BubakPlace
 {
     string name;
+	string workinghours;
 	string triggerpos;
 	string triggermins;
 	string triggermaxs;
@@ -14,11 +15,13 @@ class BubakPlace
 	float spawnradius;
 	int bubaknum;
 	int onlyfilluptobubaknum;
+	bool itemrandomdmg
 	ref TStringArray bubaci;
 
-    void BubakPlace(string nam, string trxz, string trmin, string trmax, float trrad, float trclr, float trclh, string notf, int notftim, int trd, TStringArray spawnpos, float spawnr, int bubn, int onlyfillup, TStringArray bub) 
+    void BubakPlace(string nam, string whrs, string trxz, string trmin, string trmax, float trrad, float trclr, float trclh, string notf, int notftim, int trd, TStringArray spawnpos, float spawnr, int bubn, int onlyfillup, bool dmg, TStringArray bub) 
 	{
         name = nam;
+		workinghours = whrs;
 		triggerpos = trxz;
 		triggermins = trmin;
 		triggermaxs = trmax;
@@ -32,6 +35,7 @@ class BubakPlace
 		spawnradius = spawnr;
 		bubaknum = bubn;
 		onlyfilluptobubaknum = onlyfillup;
+		itemrandomdmg = dmg;
 		bubaci = bub;
     }
 }
@@ -122,6 +126,11 @@ class BubakConfig
 				configData.BubakLocations.Get(i).triggercylradius = 0;
 				configData.BubakLocations.Get(i).triggercylheight = 0;
 			}
+			if (!configData.BubakLocations.Get(i).workinghours)
+			{
+				configData.BubakLocations.Get(i).workinghours = "0-24";
+				configData.BubakLocations.Get(i).itemrandomdmg = false;
+			}
 		}
 			
         JsonFileLoader<BuBuConfig>.JsonSaveFile(configPath, configData);
@@ -130,7 +139,7 @@ class BubakConfig
     protected static void CreateDefaultConfig(out BuBuConfig configData)
     {
         configData = new BuBuConfig();
-		configData.BubakLocations.Insert( new BubakPlace("trigger1", "1683 457 14219", "-1 -0.2 -1", "1 1 1" ,0, 0, 0,"" , 2, 1800, {"1683 457 14219", "1684 457 14218"}, 0, 4, 1, {"ZmbM_ClerkFat_White", "ZmbM_SoldierNormal"} ));
-		configData.BubakLocations.Insert( new BubakPlace("trigger2", "1530 0 8", "-1 -0.2 -1", "1 1 1" ,0, 0, 0, "", 2, 3600, {"1358 500 25", "0 0 0"}, 0, 20, 0, {"ZmbM_ClerkFat_White", "ZmbM_SoldierNormal"} ));
+		configData.BubakLocations.Insert( new BubakPlace("trigger1", "0-24", "1683 457 14219", "-1 -0.2 -1", "1 1 1" ,0, 0, 0,"" , 2, 1800, {"1683 457 14219", "1684 457 14218"}, 0, 4, 1, true, {"ZmbM_ClerkFat_White", "ZmbM_SoldierNormal"} ));
+		configData.BubakLocations.Insert( new BubakPlace("trigger2", "23-6", "1530 0 8", "-1 -0.2 -1", "1 1 1" ,0, 0, 0, "", 2, 3600, {"1358 500 25", "0 0 0"}, 0, 20, 0, true, {"ZmbM_ClerkFat_White", "ZmbM_SoldierNormal"} ));
 	}
 }

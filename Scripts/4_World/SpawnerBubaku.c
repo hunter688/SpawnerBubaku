@@ -73,6 +73,8 @@ class SpawnerBubaku
 			trigger.SetTriggerDelay(config.BubakLocations.Get(i).triggerdelay);
 			trigger.SetBubakNum(config.BubakLocations.Get(i).bubaknum);
 			trigger.SetOnlyFillUpToBubaknum(config.BubakLocations.Get(i).onlyfilluptobubaknum);
+			trigger.SetRandomDamage(config.BubakLocations.Get(i).itemrandomdmg);
+			trigger.SetWorkingHours(config.BubakLocations.Get(i).workinghours);
 		}
 	}
 

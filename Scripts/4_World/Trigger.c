@@ -10,6 +10,8 @@ class BubakTrigger extends Trigger
 	protected int m_BubakNum;
 	protected int m_LastTriggerTime;
 	protected int m_OnlyFillUpToBubaknum;
+	protected bool m_RandomDmg;
+	protected string m_WorkingHours;
 	
 	void SetTriggerName(string name)
 	{
@@ -89,6 +91,15 @@ class BubakTrigger extends Trigger
 	{
 		m_OnlyFillUpToBubaknum = onlyFillUpToBubaknum;
 	}
+	
+	void SetRandomDamage(bool dmg)
+	{
+		m_RandomDmg = dmg;
+	}
+	void SetWorkingHours(string hrs)
+	{
+		m_WorkingHours = hrs;
+	}
 
 	bool CanTriggerAction(int time)
 	{
@@ -106,7 +117,7 @@ class BubakTrigger extends Trigger
     {
 		SPBLogger.GetInstance().Log( "SpawnerBubaku ENTER" );
 
-		if (obj.IsMan() && GetGame().IsServer())
+		if (obj.IsMan() && GetGame().IsServer() && IsWorkingTime())
 		{
 			// porovnat s ulozenym casem tiku, kdyz je vetsi nez cooldown ulozit novy a povolit akci
 			//GetGame().CreateObject("Seachest", obj.GetPosition() );
@@ -114,7 +125,7 @@ class BubakTrigger extends Trigger
 			SPBLogger.GetInstance().Log( "Triggered " + GetTriggerName() + " time " + GetGame().GetTime()/1000);
 			if (CanTriggerAction(GetGame().GetTime()/1000))
 			{
-				if (PlayerBase.Cast(obj).GetIdentity())
+				if (PlayerBase.Cast(obj) && PlayerBase.Cast(obj).GetIdentity())
 				{
 					if (PlayerBase.Cast(obj).GetIdentity().GetName())
 					{	
@@ -163,6 +174,11 @@ class BubakTrigger extends Trigger
 		auto newObject = GetGame().CreateObject(type, pos, create_local, init_ai, create_physics);
 		if (newObject)
 		{
+			if (!EntityAI.Cast(newObject).IsDayZCreature() && m_RandomDmg)
+			{
+				float rndhealth = Math.RandomFloat(newObject.GetMaxHealth("", "")*0.1, newObject.GetMaxHealth("", ""));
+				newObject.SetHealth("", "", rndhealth);
+			}
 			SPBLogger.GetInstance().Log("Created bubak: " + newObject.GetID());
 			SPBLogger.GetInstance().Log("pos: " + pos.ToString());
 		}
@@ -332,6 +348,29 @@ class BubakTrigger extends Trigger
 		}
 		
 		return randompos;
+		
+	}
+	
+	bool IsWorkingTime()
+	{
+		int year, month, day, hour, minute;
+		int wtbegin = 0;
+		int wtend = 24;
+		if (m_WorkingHours.Contains("-"))
+		{
+			TStringArray loc = new TStringArray;
+			m_WorkingHours.Split( "-", loc );
+			wtbegin = loc.Get(0).ToInt();
+			wtend = loc.Get(1).ToInt();
+		}
+
+		GetGame().GetWorld().GetDate(year, month, day, hour, minute);
+		if ( hour >= wtbegin || hour <= wtend )
+		{
+			return true;
+		} else {
+			return false;
+		}
 		
 	}
 };
