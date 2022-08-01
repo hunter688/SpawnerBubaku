@@ -365,7 +365,7 @@ class BubakTrigger extends Trigger
 		}
 
 		GetGame().GetWorld().GetDate(year, month, day, hour, minute);
-		if ( hour >= wtbegin || hour <= wtend )
+		if ( hour >= wtbegin && hour <= wtend )
 		{
 			return true;
 		} else {
