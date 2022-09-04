@@ -112,6 +112,11 @@ class BubakTrigger extends Trigger
 		return false;
 	}
 	
+	override bool CanAddObjectAsInsider(Object object)
+    {
+        PlayerBase player = PlayerBase.Cast(object);
+        return player != null;
+    }
 	
 	void OnEnter(Object obj)
     {
