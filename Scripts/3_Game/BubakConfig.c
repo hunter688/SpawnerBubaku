@@ -140,7 +140,7 @@ class BubakConfig
     {
         configData = new BuBuConfig();
 		//hmm some limit ??
-		//configData.BubakLocations.Insert( new BubakPlace("trigger1", "0-24", "1683 457 14219", "-1 -0.2 -1", "1 1 1" ,0, 0, 0,"" , 2, 1800, {"1683 457 14219", "1684 457 14218"}, 0, 4, 1, 1, {"ZmbM_ClerkFat_White", "ZmbM_SoldierNormal"} ));
-		//configData.BubakLocations.Insert( new BubakPlace("trigger2", "23-6", "1530 0 8", "-1 -0.2 -1", "1 1 1" ,0, 0, 0, "", 2, 3600, {"1358 500 25", "0 0 0"}, 0, 20, 0, 0, {"ZmbM_ClerkFat_White", "ZmbM_SoldierNormal"} ));
+		configData.BubakLocations.Insert( new BubakPlace("trigger1", "0-24", "1683 457 14219", "-1 -0.2 -1", "1 1 1" ,0, 0, 0,"" , 2, 1800, {"1683 457 14219", "1684 457 14218"}, 0, 4, 1, 1, {"ZmbM_ClerkFat_White", "ZmbM_SoldierNormal"} ));
+		configData.BubakLocations.Insert( new BubakPlace("trigger2", "23-6", "1530 0 8", "-1 -0.2 -1", "1 1 1" ,0, 0, 0, "", 2, 3600, {"1358 500 25", "0 0 0"}, 0, 20, 0, 0, {"ZmbM_ClerkFat_White", "ZmbM_SoldierNormal"} ));
 	}
 }

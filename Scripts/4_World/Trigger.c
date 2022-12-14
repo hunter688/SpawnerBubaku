@@ -13,6 +13,11 @@ class BubakTrigger extends Trigger
 	protected bool m_RandomDmg;
 	protected string m_WorkingHours;
 	
+	void AdditionalAction()
+	{
+		// Override this, if you need custom actions serverside
+	}
+	
 	void SetTriggerName(string name)
 	{
 		m_TriggerName = name;
@@ -137,6 +142,7 @@ class BubakTrigger extends Trigger
 						SPBLogger.GetInstance().Log("Can trigger action " + GetGame().GetTime()/1000 + " last " + m_LastTriggerTime + " trigger delay " + m_TriggerDelay);
 						SetLastTriggerTime(GetGame().GetTime()/1000);
 						SpawniBubaky();
+						AdditionalAction();
 						if (GetTriggerNotification() != "")
 						{
 							NotificationSystem.SendNotificationToPlayerExtended(Man.Cast(obj), GetTriggerNotificationTime(), GetTriggerName(), GetTriggerNotification());
@@ -370,10 +376,23 @@ class BubakTrigger extends Trigger
 		}
 
 		GetGame().GetWorld().GetDate(year, month, day, hour, minute);
-		if ( hour >= wtbegin && hour <= wtend )
+		if (wtbegin > wtend)
 		{
-			return true;
-		} else {
+			if ( hour >= wtbegin || hour <= wtend )
+			{
+				return true;
+			}
+			return false;
+		}
+		else if (wtbegin < wtend)
+		{	
+			if ( hour >= wtbegin && hour <= wtend )
+			{
+				return true;
+			}
+			return false;
+		}
+		else {
 			return false;
 		}
 		
