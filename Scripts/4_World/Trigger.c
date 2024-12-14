@@ -5,6 +5,7 @@ class BubakTrigger extends Trigger
 	protected int m_TriggerNotificationTime;
 	protected ref TStringArray m_SpawnLocations;
 	protected ref TStringArray m_Bubaci;
+	protected ref TStringArray m_BubaciInventory;
 	protected float m_SpawnRadius;
 	protected int m_TriggerDelay;
 	protected int m_BubakNum;
@@ -12,6 +13,7 @@ class BubakTrigger extends Trigger
 	protected int m_OnlyFillUpToBubaknum;
 	protected bool m_RandomDmg;
 	protected string m_WorkingHours;
+	protected ref TStringArray m_TriggerDependency;
 	
 	void AdditionalAction()
 	{
@@ -26,6 +28,11 @@ class BubakTrigger extends Trigger
 	string GetTriggerName()
 	{
 		return m_TriggerName;
+	}
+	
+	void SetTriggerDependency(TStringArray dependency)
+	{
+		m_TriggerDependency = dependency;
 	}
 	
 	void SetTriggerNotification(string notification)
@@ -67,6 +74,12 @@ class BubakTrigger extends Trigger
 		return m_SpawnRadius;
 	}
 	
+	void SetSpawnChance(float chance)
+	{
+		m_SpawnChance = chance;
+	}
+	
+	
 	void SetBubaci(TStringArray bubaci)
 	{
 		m_Bubaci = bubaci;
@@ -76,6 +89,17 @@ class BubakTrigger extends Trigger
 	{
 		return m_Bubaci;
 	}
+	
+	void SetBubaciInventory(TStringArray inventory)
+	{
+		m_BubaciInventory = inventory;
+	}
+	
+	TStringArray GetBubaciInventory()
+	{
+		return m_BubaciInventory;
+	}
+	
 	
 	void SetTriggerDelay(int delay)
 	{
@@ -116,6 +140,46 @@ class BubakTrigger extends Trigger
 			
 		return false;
 	}
+	bool IsTriggerValid()
+	{
+		//add configurable time of validity
+		if (m_LastTriggerTime > 0 && (GetGame().GetTime()/1000) < m_LastTriggerTime+300)
+		{
+			return true;
+		}
+		return false;
+	}
+	
+	bool IsDependencyMet()
+	{
+		if (m_TriggerDependency.Count()>0)
+		{
+			for (int i=0; i < m_TriggerDependency.Count(); i++)
+			{
+				SPBLogger.GetInstance().Log( "Trigger " + m_TriggerName + " have dependency on trigger " + m_TriggerDependency.Get(i) + " classname " + GetTrigger(m_TriggerDependency.Get(i)) );
+				if ( GetTrigger(m_TriggerDependency.Get(i)) && !GetTrigger(m_TriggerDependency.Get(i)).IsTriggerValid())
+				{
+					return false;
+				}
+				
+			}
+			
+		}
+		return true;
+	}
+	BubakTrigger GetTrigger(string name)
+	{
+		BubakTrigger trigger;
+		array<BubakTrigger> triggers = SpawnerBubaku.GetInstance().GetTriggers();
+		for (int i=0; i< triggers.Count(); i++)
+		{
+			if (triggers.Get(i).GetTriggerName() == name)
+			{
+				return triggers.Get(i);
+			}
+		}
+		return null;
+	}
 	
 	override bool CanAddObjectAsInsider(Object object)
     {
@@ -123,11 +187,11 @@ class BubakTrigger extends Trigger
         return player != null;
     }
 	
-	void OnEnter(Object obj)
+	override void OnEnter(Object obj)
     {
 		SPBLogger.GetInstance().Log( "SpawnerBubaku ENTER" );
 
-		if (obj.IsMan() && GetGame().IsServer() && IsWorkingTime())
+		if (obj.IsMan() && GetGame().IsServer() && IsWorkingTime() && IsDependencyMet())
 		{
 			// porovnat s ulozenym casem tiku, kdyz je vetsi nez cooldown ulozit novy a povolit akci
 			//GetGame().CreateObject("Seachest", obj.GetPosition() );
@@ -159,7 +223,7 @@ class BubakTrigger extends Trigger
 		
     }
 
-    void OnLeave(Object obj)
+    override void OnLeave(Object obj)
     {    
 		SPBLogger.GetInstance().Log( "SpawnerBubaku EXIT" );
     }
@@ -189,6 +253,10 @@ class BubakTrigger extends Trigger
 			{
 				float rndhealth = Math.RandomFloat(newObject.GetMaxHealth("", "")*0.1, newObject.GetMaxHealth("", ""));
 				newObject.SetHealth("", "", rndhealth);
+			}
+			if (EntityAI.Cast(newObject).IsDayZCreature() && GetBubaciInventory() && GetBubaciInventory().Count() > 0 && Math.RandomIntInclusive(0, 100) > 50)
+			{
+				EntityAI.Cast(newObject).GetInventory().CreateInInventory(GetBubaciInventory().GetRandomElement());
 			}
 			SPBLogger.GetInstance().Log("Created bubak: " + newObject.GetID());
 			SPBLogger.GetInstance().Log("pos: " + pos.ToString());
@@ -248,6 +316,10 @@ class BubakTrigger extends Trigger
 					pos = loc.Get(0);
 					ori = loc.Get(1);
 					rotated = true;
+				}
+				if (pos.Contains(","))
+				{
+					SPBLogger.GetInstance().Log("Trigger spawnerpos contains commas in coordinates, thats wrong! Only one space between numbers! Fix yours config according example!!!", SPBLogger.LOGLEVEL_CRITICAL);
 				}
 				spawnpos = pos.ToVector();
 				if (m_SpawnRadius >0)

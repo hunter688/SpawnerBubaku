@@ -5,6 +5,7 @@ class SpawnerBubaku
 
 	protected static ref SpawnerBubaku Instance;
 	protected ref map<int, ref TIntArray> spawned_instances;
+	protected ref array<BubakTrigger> m_Triggers;
 
 	static SpawnerBubaku GetInstance()
 	{
@@ -19,12 +20,22 @@ class SpawnerBubaku
 	{
 		Instance = null;
 	}
+	array<BubakTrigger> GetTriggers()
+	{
+		return m_Triggers;
+	}
+	
+	void AddTrigger(BubakTrigger trigger)
+	{
+		m_Triggers.Insert(trigger);
+		SPBLogger.GetInstance().Log( "Added trigger to pool " + m_Triggers.Count() );
+	}
 	
 	void SpawnerBubaku()
     {
         
 		SPBLogger.GetInstance().Log( "SpawnerBubaku started!" );
-
+		m_Triggers = new array<BubakTrigger>;
 		spawned_instances = new map<int, ref TIntArray>;
 
 		BuBuConfig config = GetDayZGame().GetBubakConfig();
@@ -43,7 +54,14 @@ class SpawnerBubaku
 				pos = config.BubakLocations.Get(i).triggerpos;
 				rot = "0 0 0";
 			}
-			SPBLogger.GetInstance().Log("Created trigger " + config.BubakLocations.Get(i).name + " at " + pos + " ori: " + rot, SPBLogger.LOGLEVEL_CRITICAL);
+			if (pos.Contains(","))
+			{
+				SPBLogger.GetInstance().Log("Trigger position contains commas, thats wrong! Only one space between numbers! Fix yours config according example!!!", SPBLogger.LOGLEVEL_CRITICAL);
+			}
+			else
+			{
+				SPBLogger.GetInstance().Log("Created trigger " + config.BubakLocations.Get(i).name + " at " + pos + " ori: " + rot, SPBLogger.LOGLEVEL_CRITICAL);
+			}
 			trigger = BubakTrigger.Cast(GetGame().CreateObject("BubakTrigger", pos.ToVector() ));
 			trigger.SetOrientation(rot.ToVector());
 			
@@ -68,6 +86,31 @@ class SpawnerBubaku
 			trigger.SetTriggerNotificationTime(config.BubakLocations.Get(i).notificationtime);
 			trigger.SetSpawnLocations(config.BubakLocations.Get(i).spawnerpos);
 			trigger.SetSpawnRadius(config.BubakLocations.Get(i).spawnradius);
+			if (!configData.BubakLocations.Get(i).bubakinventory)
+			{
+				configData.BubakLocations.Get(i).bubakinventory = {"TunaCan", "Rag", "Pajka"};
+			}			if (!configData.BubakLocations.Get(i).bubakinventory)
+			{
+				configData.BubakLocations.Get(i).bubakinventory = {"TunaCan", "Rag", "Pajka"};
+			}			if (!configData.BubakLocations.Get(i).bubakinventory)
+			{
+				configData.BubakLocations.Get(i).bubakinventory = {"TunaCan", "Rag", "Pajka"};
+			}			if (!configData.BubakLocations.Get(i).bubakinventory)
+			{
+				configData.BubakLocations.Get(i).bubakinventory = {"TunaCan", "Rag", "Pajka"};
+			}			if (!configData.BubakLocations.Get(i).bubakinventory)
+			{
+				configData.BubakLocations.Get(i).bubakinventory = {"TunaCan", "Rag", "Pajka"};
+			}			if (!configData.BubakLocations.Get(i).bubakinventory)
+			{
+				configData.BubakLocations.Get(i).bubakinventory = {"TunaCan", "Rag", "Pajka"};
+			}			if (!configData.BubakLocations.Get(i).bubakinventory)
+			{
+				configData.BubakLocations.Get(i).bubakinventory = {"TunaCan", "Rag", "Pajka"};
+			}			if (!configData.BubakLocations.Get(i).bubakinventory)
+			{
+				configData.BubakLocations.Get(i).bubakinventory = {"TunaCan", "Rag", "Pajka"};
+			}
 			trigger.SetBubaci(config.BubakLocations.Get(i).bubaci);
 			trigger.SetLastTriggerTime(-1 * config.BubakLocations.Get(i).triggerdelay);
 			trigger.SetTriggerDelay(config.BubakLocations.Get(i).triggerdelay);
@@ -75,6 +118,10 @@ class SpawnerBubaku
 			trigger.SetOnlyFillUpToBubaknum(config.BubakLocations.Get(i).onlyfilluptobubaknum);
 			trigger.SetRandomDamage(config.BubakLocations.Get(i).itemrandomdmg);
 			trigger.SetWorkingHours(config.BubakLocations.Get(i).workinghours);
+			trigger.SetBubaciInventory(config.BubakLocations.Get(i).bubakinventory);
+			trigger.SetTriggerDependency(config.BubakLocations.Get(i).triggerdependency);
+			
+			AddTrigger(trigger);
 		}
 	}
 
