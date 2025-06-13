@@ -377,13 +377,18 @@ class BubakTrigger extends Trigger
 					ori = loc.Get(1);
 					rotated = true;
 				}
+				bubak = GetBubaci().GetRandomElement();
+				if (pos.Contains(","))
+				{
+					SPBLogger.GetInstance().Log("Trigger " + GetTriggerName() + " contains commas in entity spawn position. Positions must be seperated by spaces only. Preventing spawn of entity " + bubak, SPBLogger.LOGLEVEL_CRITICAL);
+					continue;
+				}
 				spawnpos = pos.ToVector();
 				if (m_SpawnRadius >0)
 				{
 					spawnpos = SetRandomPos(spawnpos, m_SpawnRadius);
 				}
-				
-				bubak = GetBubaci().GetRandomElement();
+			
 				spawnchance = 1.0;
 				if (bubak.Contains("|"))
 				{
