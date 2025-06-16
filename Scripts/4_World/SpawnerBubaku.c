@@ -56,7 +56,8 @@ class SpawnerBubaku
 			}
 			if (pos.Contains(","))
 			{
-				SPBLogger.GetInstance().Log("Trigger position contains commas, thats wrong! Only one space between numbers! Fix yours config according example!!!", SPBLogger.LOGLEVEL_CRITICAL);
+				SPBLogger.GetInstance().Log("Trigger " + config.BubakLocations.Get(i).name + " contains commas in trigger spawn position. Positions must be seperated by spaces only. Preventing spawn.", SPBLogger.LOGLEVEL_CRITICAL);
+				continue;
 			}
 			else
 			{
