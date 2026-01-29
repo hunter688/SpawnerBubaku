@@ -14,6 +14,7 @@ class BubakTrigger extends Trigger
 	protected bool m_RandomDmg;
 	protected string m_WorkingHours;
 	protected ref TStringArray m_TriggerDependency;
+	protected bool m_ShouldSpawnAI;
 	
 	void AdditionalAction()
 	{
@@ -23,11 +24,30 @@ class BubakTrigger extends Trigger
 	void SetTriggerName(string name)
 	{
 		m_TriggerName = name;
+		m_ShouldSpawnAI = false;
 	}
 	
 	string GetTriggerName()
 	{
 		return m_TriggerName;
+	}
+	
+	bool ShouldSpawnAI()
+	{
+		#ifdef AI_BANDITS
+		DynamicAIBConfig config = GetDayZGame().GetDynamicAIBConfig();
+		if (config)
+		{	
+			for (int i=0; i < config.GroupLocations.Count(); i++)
+			{
+				if (config.GroupLocations.Get(i).name == GetTriggerName())
+				{
+					m_ShouldSpawnAI = true;
+				}
+			}
+		}
+		#endif
+		return m_ShouldSpawnAI;
 	}
 	
 	void SetTriggerDependency(TStringArray dependency)
@@ -73,12 +93,12 @@ class BubakTrigger extends Trigger
 	{
 		return m_SpawnRadius;
 	}
-	
+	/*
 	void SetSpawnChance(float chance)
 	{
 		m_SpawnChance = chance;
 	}
-	
+	*/
 	
 	void SetBubaci(TStringArray bubaci)
 	{
@@ -196,7 +216,7 @@ class BubakTrigger extends Trigger
 			// porovnat s ulozenym casem tiku, kdyz je vetsi nez cooldown ulozit novy a povolit akci
 			//GetGame().CreateObject("Seachest", obj.GetPosition() );
 			//GetGame().CreateObject("ZmbM_ClerkFat_White", obj.GetPosition(), false, true, true );
-			SPBLogger.GetInstance().Log( "Triggered " + GetTriggerName() + " time " + GetGame().GetTime()/1000);
+			SPBLogger.GetInstance().Log( "Triggered " + GetTriggerName() + " time " + GetGame().GetTime()/1000, SPBLogger.LOGLEVEL_DEBUG);
 			if (CanTriggerAction(GetGame().GetTime()/1000))
 			{
 				if (PlayerBase.Cast(obj) && PlayerBase.Cast(obj).GetIdentity())
@@ -205,13 +225,24 @@ class BubakTrigger extends Trigger
 					{	
 						SPBLogger.GetInstance().Log("Can trigger action " + GetGame().GetTime()/1000 + " last " + m_LastTriggerTime + " trigger delay " + m_TriggerDelay);
 						SetLastTriggerTime(GetGame().GetTime()/1000);
+						#ifdef AI_BANDITS
+						if (ShouldSpawnAI())
+						{
+							SpawniAI( GetTriggerName(),  GetSpawnLocations().GetRandomElement());
+						}
+						else
+						{
+							SpawniBubaky();
+						}
+						#else
 						SpawniBubaky();
+						#endif
 						AdditionalAction();
 						if (GetTriggerNotification() != "")
 						{
 							NotificationSystem.SendNotificationToPlayerExtended(Man.Cast(obj), GetTriggerNotificationTime(), GetTriggerName(), GetTriggerNotification());
 						}
-						SPBLogger.GetInstance().Log( PlayerBase.Cast(obj).GetIdentity().GetName() + " triggered " + GetTriggerName(), SPBLogger.LOGLEVEL_CRITICAL);
+						SPBLogger.GetInstance().Log( PlayerBase.Cast(obj).GetIdentity().GetName() + " triggered " + GetTriggerName(), SPBLogger.LOGLEVEL_DEBUG);
 					}
 				}
 			}
@@ -274,7 +305,14 @@ class BubakTrigger extends Trigger
 		
 		return newObject;
 	}
-
+	
+	#ifdef AI_BANDITS
+	void SpawniAI(string name, string position)
+	{
+		DynamicAIBManager.GetInstance().SpawnGroup(name, position);
+	}
+	#endif
+	
 	void SpawniBubaky()
 	{
 		vector randvec, randompos, spawnpos;

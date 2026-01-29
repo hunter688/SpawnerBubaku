@@ -60,7 +60,7 @@ class SpawnerBubaku
 			}
 			else
 			{
-				SPBLogger.GetInstance().Log("Created trigger " + config.BubakLocations.Get(i).name + " at " + pos + " ori: " + rot, SPBLogger.LOGLEVEL_CRITICAL);
+				SPBLogger.GetInstance().Log("Created trigger " + config.BubakLocations.Get(i).name + " at " + pos + " ori: " + rot, SPBLogger.LOGLEVEL_DEBUG);
 			}
 			trigger = BubakTrigger.Cast(GetGame().CreateObject("BubakTrigger", pos.ToVector() ));
 			trigger.SetOrientation(rot.ToVector());
@@ -86,43 +86,26 @@ class SpawnerBubaku
 			trigger.SetTriggerNotificationTime(config.BubakLocations.Get(i).notificationtime);
 			trigger.SetSpawnLocations(config.BubakLocations.Get(i).spawnerpos);
 			trigger.SetSpawnRadius(config.BubakLocations.Get(i).spawnradius);
-			if (!configData.BubakLocations.Get(i).bubakinventory)
-			{
-				configData.BubakLocations.Get(i).bubakinventory = {"TunaCan", "Rag", "Pajka"};
-			}			if (!configData.BubakLocations.Get(i).bubakinventory)
-			{
-				configData.BubakLocations.Get(i).bubakinventory = {"TunaCan", "Rag", "Pajka"};
-			}			if (!configData.BubakLocations.Get(i).bubakinventory)
-			{
-				configData.BubakLocations.Get(i).bubakinventory = {"TunaCan", "Rag", "Pajka"};
-			}			if (!configData.BubakLocations.Get(i).bubakinventory)
-			{
-				configData.BubakLocations.Get(i).bubakinventory = {"TunaCan", "Rag", "Pajka"};
-			}			if (!configData.BubakLocations.Get(i).bubakinventory)
-			{
-				configData.BubakLocations.Get(i).bubakinventory = {"TunaCan", "Rag", "Pajka"};
-			}			if (!configData.BubakLocations.Get(i).bubakinventory)
-			{
-				configData.BubakLocations.Get(i).bubakinventory = {"TunaCan", "Rag", "Pajka"};
-			}			if (!configData.BubakLocations.Get(i).bubakinventory)
-			{
-				configData.BubakLocations.Get(i).bubakinventory = {"TunaCan", "Rag", "Pajka"};
-			}			if (!configData.BubakLocations.Get(i).bubakinventory)
-			{
-				configData.BubakLocations.Get(i).bubakinventory = {"TunaCan", "Rag", "Pajka"};
-			}
-			trigger.SetBubaci(config.BubakLocations.Get(i).bubaci);
+
+			
 			trigger.SetLastTriggerTime(-1 * config.BubakLocations.Get(i).triggerdelay);
 			trigger.SetTriggerDelay(config.BubakLocations.Get(i).triggerdelay);
-			trigger.SetBubakNum(config.BubakLocations.Get(i).bubaknum);
-			trigger.SetOnlyFillUpToBubaknum(config.BubakLocations.Get(i).onlyfilluptobubaknum);
-			trigger.SetRandomDamage(config.BubakLocations.Get(i).itemrandomdmg);
+			
+			
 			trigger.SetWorkingHours(config.BubakLocations.Get(i).workinghours);
-			trigger.SetBubaciInventory(config.BubakLocations.Get(i).bubakinventory);
+			
 			trigger.SetTriggerDependency(config.BubakLocations.Get(i).triggerdependency);
+			
+			
+			trigger.SetBubaci(config.BubakLocations.Get(i).bubakProps.bubaci);
+			trigger.SetBubakNum(config.BubakLocations.Get(i).bubakProps.bubaknum);
+			trigger.SetOnlyFillUpToBubaknum(config.BubakLocations.Get(i).bubakProps.onlyfilluptobubaknum);
+			trigger.SetRandomDamage(config.BubakLocations.Get(i).bubakProps.itemrandomdmg);
+			trigger.SetBubaciInventory(config.BubakLocations.Get(i).bubakProps.bubakinventory);
 			
 			AddTrigger(trigger);
 		}
+		
 	}
 
 	void AddSpawnedInstance(int trigger_id, int bubak_id)

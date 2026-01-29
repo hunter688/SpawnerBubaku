@@ -7,7 +7,7 @@ modded class MissionServer
 		string fileName;
 		TStringArray fajly;
 		fajly = new TStringArray();
-		FindFileHandle handle = FindFile("$profile:\\SpawnerBubaku\\SpawnerBubaku*.json", fileName, fileAttr, 0);
+		FindFileHandle handle = FindFile("$profile:\\SpawnerBubaku\\SpawnerBubakuV2*.json", fileName, fileAttr, 0);
 		fajly.Insert(fileName);
 		//SPBLogger.GetInstance().Log("Filename " + fileName, SPBLogger.LOGLEVEL_CRITICAL);
 		while ( FindNextFile(handle, fileName, fileAttr))
@@ -23,7 +23,7 @@ modded class MissionServer
 		}
 		else
 		{
-			fileName = "SpawnerBubaku.json";
+			fileName = "SpawnerBubakuV2.json";
 		}
 		BubakConfig.UpgradeConfig(fileName, config);
         GetDayZGame().SetBubakConfig(config);
