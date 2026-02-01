@@ -176,11 +176,16 @@ class BubakTrigger extends Trigger
 		{
 			for (int i=0; i < m_TriggerDependency.Count(); i++)
 			{
-				SPBLogger.GetInstance().Log( "Trigger " + m_TriggerName + " have dependency on trigger " + m_TriggerDependency.Get(i) + " classname " + GetTrigger(m_TriggerDependency.Get(i)) );
-				if ( GetTrigger(m_TriggerDependency.Get(i)) && !GetTrigger(m_TriggerDependency.Get(i)).IsTriggerValid())
+				
+				if (m_TriggerDependency.Get(i).Length()>0)
 				{
-					return false;
+					SPBLogger.GetInstance().Log( "Trigger " + m_TriggerName + " have dependency on trigger " + m_TriggerDependency.Get(i) + " classname " + GetTrigger(m_TriggerDependency.Get(i)) );
+					if ( GetTrigger(m_TriggerDependency.Get(i)) && !GetTrigger(m_TriggerDependency.Get(i)).IsTriggerValid())
+					{
+						return false;
+					}
 				}
+
 				
 			}
 			
