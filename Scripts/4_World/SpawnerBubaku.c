@@ -1,17 +1,16 @@
-
-
-class SpawnerBubaku
+class SpawnerBubaku extends PluginBase
 {
 
-	protected static ref SpawnerBubaku Instance;
+	//protected static ref SpawnerBubaku Instance;
 	protected ref map<int, ref TIntArray> spawned_instances;
 	protected ref array<BubakTrigger> m_Triggers;
-
-	static SpawnerBubaku GetInstance()
+	
+	/*
+	SpawnerBubaku GetInstance()
 	{
 		if (!Instance)
         {
-            Instance = new SpawnerBubaku();
+            Instance = this;
         }
 		return Instance;
 	}
@@ -20,6 +19,7 @@ class SpawnerBubaku
 	{
 		Instance = null;
 	}
+	*/
 	array<BubakTrigger> GetTriggers()
 	{
 		return m_Triggers;
@@ -34,11 +34,39 @@ class SpawnerBubaku
 	void SpawnerBubaku()
     {
         
+		BuBuConfig config;
+		FileAttr fileAttr;
+		string fileName;
+		TStringArray fajly;
+		fajly = new TStringArray();
+		FindFileHandle handle = FindFile("$profile:\\SpawnerBubaku\\SpawnerBubakuV2*.json", fileName, fileAttr, 0);
+		fajly.Insert(fileName);
+		//SPBLogger.GetInstance().Log("Filename " + fileName, SPBLogger.LOGLEVEL_CRITICAL);
+		while ( FindNextFile(handle, fileName, fileAttr))
+		{
+			fajly.Insert(fileName);
+			//SPBLogger.GetInstance().Log("Filename " + fileName, SPBLogger.LOGLEVEL_CRITICAL);
+		}
+		fileName = fajly.GetRandomElement();
+		fileName = fajly.GetRandomElement();
+		if (fajly.Count()>1)
+		{
+			SPBLogger.GetInstance().Log("Selected Filename " + fileName, SPBLogger.LOGLEVEL_CRITICAL);
+		}
+		else
+		{
+			fileName = "SpawnerBubakuV2.json";
+		}
+		BubakConfig.UpgradeConfig(fileName, config);
+        GetDayZGame().SetBubakConfig(config);
+		
+		
+		
 		SPBLogger.GetInstance().Log( "SpawnerBubaku started!" );
 		m_Triggers = new array<BubakTrigger>;
 		spawned_instances = new map<int, ref TIntArray>;
 
-		BuBuConfig config = GetDayZGame().GetBubakConfig();
+		config = GetDayZGame().GetBubakConfig();
 		BubakTrigger trigger;
 		vector mins, maxs;
 		float radius, cylradius, cylheight, spawnradius;

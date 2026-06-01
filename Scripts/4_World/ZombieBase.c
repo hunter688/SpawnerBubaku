@@ -1,10 +1,14 @@
-modded class ZombieBase extends DayZInfected {
+modded class ZombieBase {
 
     int m_trigger_id;
 
     override void EEKilled(Object killer)
 	{
-        if(m_trigger_id) SpawnerBubaku.GetInstance().RemoveSpawnedInstance(m_trigger_id, GetID());
+        SpawnerBubaku plugin = SpawnerBubaku.Cast(GetPluginManager().GetPluginByType(SpawnerBubaku));
+		if(m_trigger_id)
+		{
+			plugin.RemoveSpawnedInstance(m_trigger_id, GetID());
+		}
         super.EEKilled(killer);
     }
 

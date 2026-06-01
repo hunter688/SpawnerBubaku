@@ -195,7 +195,8 @@ class BubakTrigger extends Trigger
 	BubakTrigger GetTrigger(string name)
 	{
 		BubakTrigger trigger;
-		array<BubakTrigger> triggers = SpawnerBubaku.GetInstance().GetTriggers();
+		SpawnerBubaku plugin = SpawnerBubaku.Cast(GetPluginManager().GetPluginByType(SpawnerBubaku));
+		array<BubakTrigger> triggers = plugin.GetTriggers();
 		for (int i=0; i< triggers.Count(); i++)
 		{
 			if (triggers.Get(i).GetTriggerName() == name)
@@ -275,7 +276,8 @@ class BubakTrigger extends Trigger
 
 	int SpawnerBubaku_GetActiveObjectsNum()
 	{
-		TIntArray spawned_instances = SpawnerBubaku.GetInstance().GetSpawnedInstances(GetID());
+		SpawnerBubaku plugin = SpawnerBubaku.Cast(GetPluginManager().GetPluginByType(SpawnerBubaku));
+		TIntArray spawned_instances = plugin.GetSpawnedInstances(GetID());
 		if(spawned_instances) return spawned_instances.Count();
 		return 0;
 	}
@@ -304,7 +306,8 @@ class BubakTrigger extends Trigger
 			if(zombie)
 			{
 				zombie.SetTriggerId(GetID());
-				SpawnerBubaku.GetInstance().AddSpawnedInstance(GetID(), zombie.GetID());
+				SpawnerBubaku plugin = SpawnerBubaku.Cast(GetPluginManager().GetPluginByType(SpawnerBubaku));
+				plugin.AddSpawnedInstance(GetID(), zombie.GetID());
 			}
 		}
 		

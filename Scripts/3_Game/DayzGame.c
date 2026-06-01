@@ -1,6 +1,8 @@
 modded class DayZGame
 {	
 	protected ref BuBuConfig m_BubakConfig;
+	protected ref StatBubConfig m_StaticBubakConfig;
+
 	
     void SetBubakConfig(BuBuConfig config)
     {
@@ -11,4 +13,15 @@ modded class DayZGame
     {
   		return m_BubakConfig;
     }
+	
+	void SetStaticBubakConfig(StatBubConfig config)
+    {
+        m_StaticBubakConfig = config;
+    }
+
+    StatBubConfig GetStaticBubakConfig()
+    {
+		return m_StaticBubakConfig;
+    }
+
 };
